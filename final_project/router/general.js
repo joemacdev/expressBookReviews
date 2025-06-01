@@ -66,47 +66,35 @@ public_users.get('/', function (req, res) {
 });
 
 // Route: Get book details based on ISBN
-public_users.get('/isbn/:isbn', function (req, res) {
-  // Extract ISBN from request parameters
+public_users.get("/isbn/:isbn", (req, res) => {
   const isbn = req.params.isbn;
-
-  // Implement logic to fetch and return book details for the specified ISBN
-  const book = books.getBookByISBN(isbn); // Assuming a function getBookByISBN() is defined in booksdb.js to fetch book details by ISBN
-
+  const book = getBookByISBN(isbn); // ✅ use function directly
   if (book) {
-    return res.status(200).json(book);
+    res.status(200).json(book);
   } else {
-    return res.status(404).json({ message: "Book not found" });
+    res.status(404).json({ message: "Book not found" });
   }
 });
 
 // Route: Get book details based on author
-public_users.get('/author/:author', function (req, res) {
-  // Extract author from request parameters
+public_users.get("/author/:author", (req, res) => {
   const author = req.params.author;
-
-  // Implement logic to fetch and return book details for the specified author
-  const booksByAuthor = books.getBooksByAuthor(author); // Assuming a function getBooksByAuthor() is defined in booksdb.js to fetch books by author
-
-  if (booksByAuthor.length > 0) {
-    return res.status(200).json(booksByAuthor);
+  const booksByAuthor = getBooksByAuthor(author);
+  if (Object.keys(booksByAuthor).length > 0) {
+    res.status(200).json(booksByAuthor);
   } else {
-    return res.status(404).json({ message: "Books by this author not found" });
+    res.status(404).json({ message: "No books found by that author" });
   }
 });
 
 // Route: Get all books based on title
-public_users.get('/title/:title', function (req, res) {
-  // Extract title from request parameters
+public_users.get("/title/:title", (req, res) => {
   const title = req.params.title;
-
-  // Implement logic to fetch and return book details for the specified title
-  const booksWithTitle = books.getBooksByTitle(title); // Assuming a function getBooksByTitle() is defined in booksdb.js to fetch books by title
-
-  if (booksWithTitle.length > 0) {
-    return res.status(200).json(booksWithTitle);
+  const booksByTitle = getBooksByTitle(title);
+  if (Object.keys(booksByTitle).length > 0) {
+    res.status(200).json(booksByTitle);
   } else {
-    return res.status(404).json({ message: "Books with this title not found" });
+    res.status(404).json({ message: "No books found with that title" });
   }
 });
 
