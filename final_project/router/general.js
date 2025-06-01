@@ -1,8 +1,14 @@
 // Import necessary modules
 const express = require('express');
-
+const bcrypt = require("bcrypt");
 // Import database of books and authentication functions
-let books = require("./booksdb.js");
+const {
+  books,
+  getBookByISBN,
+  getBooksByAuthor,
+  getBooksByTitle,
+  getBookReviewByISBN
+} = require("./booksdb.js");
 let isValid = require("./auth_users.js").isValid;
 let users = require("./auth_users.js").users;
 
@@ -10,31 +16,24 @@ let users = require("./auth_users.js").users;
 const public_users = express.Router();
 
 // Route: Register a new user
-public_users.post("/register", (req, res) => {
-  // Extract user data from request body
+public_users.post("/register", async (req, res) => {
   const { username, email, password } = req.body;
 
-  // Check if required fields are provided
   if (!username || !email || !password) {
     return res.status(400).json({ message: "Username, email, and password are required" });
   }
 
-  // Validate user data (e.g., check if email is valid, password meets requirements)
   if (!isValidEmail(email)) {
     return res.status(400).json({ message: "Invalid email address" });
   }
 
-  // Check if the username is already taken
   if (users.some(user => user.username === username)) {
     return res.status(400).json({ message: "Username already exists" });
   }
 
-  // Hash the password before saving it to the database (using bcrypt, for example)
-  const hashedPassword = hashPassword(password);
+  const hashedPassword = await bcrypt.hash(password, 10); // Hash the password
 
-  // Save the user data to the database
-  const newUser = { username, email, password: hashedPassword };
-  users.push(newUser);
+  users.push({ username, email, password: hashedPassword });
 
   return res.status(200).json({ message: "User registered successfully" });
 });
