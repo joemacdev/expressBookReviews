@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken'); // Import JSON Web Token for authentication
 const session = require('express-session'); // Import Express session for session management
 
 // Import route handlers
-const customer_routes = require('./router/auth_users.js').authenticated; // Import customer routes with authentication
+const customer_routes = require('./router/auth_users.js'); // Import customer routes with authentication
 const genl_routes = require('./router/general.js').general; // Import general routes
 
 // Create an Express application instance

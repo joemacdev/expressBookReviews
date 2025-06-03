@@ -84,6 +84,6 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
 });
 
 // Export the router containing registered user routes
-module.exports.authenticated = regd_users;
+module.exports = regd_users;
 module.exports.isValid = isValid;
 module.exports.users = users;
