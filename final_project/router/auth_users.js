@@ -3,6 +3,26 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 const bcrypt = require("bcrypt");
 
+const authenticateJWT = (req, res, next) => {
+    const authHeader = req.headers.authorization;
+  
+    if (authHeader) {
+      // Bearer <token>
+      const token = authHeader.split(' ')[1];
+  
+      jwt.verify(token, "your_secret_key", (err, user) => {
+        if (err) {
+          return res.status(403).json({ message: "Invalid or expired token" });
+        }
+  
+        req.user = user;  // attach user info to request object
+        next();
+      });
+    } else {
+      res.status(401).json({ message: "Authorization token required" });
+    }
+};
+
 // Import database of books
 const {
   books,
@@ -61,8 +81,10 @@ regd_users.post("/login", async (req, res) => {
         return res.status(401).json({ message: "Invalid credentials" });
     }
 
-    const token = jwt.sign({ username: username }, "your_secret_key");
-    return res.status(200).json({ token: token });
+    // Use best practice: token expires in 1 hour
+    const token = jwt.sign({ username }, "your_secret_key", { expiresIn: '1h' });
+
+    return res.status(200).json({ token });
 });
 
 // Route to add a book review for an authenticated user
